@@ -1,0 +1,47 @@
+{
+  "contributors" : [
+
+  ],
+  "description" : "脚本需要开启抓包后访问https:\/\/platform.deepseek.com\/usage。抓取请求头的内的Authorization: Bearer 后面这一串token并填入。",
+  "remoteResource" : null,
+  "localizedDescriptions" : {
+    "zh" : "",
+    "fr" : "",
+    "de" : "",
+    "zh-Hans" : "查看 DeepSeek API 用量（按 Key、按 7\/30 天）",
+    "es" : "",
+    "ru" : "",
+    "it" : "",
+    "ja" : "",
+    "pt" : "",
+    "en" : ""
+  },
+  "color" : "#4D7CFE",
+  "localizedNames" : {
+    "es" : "",
+    "zh-Hans" : "DeepSeek 用量",
+    "de" : "",
+    "zh" : "",
+    "ru" : "",
+    "pt" : "",
+    "it" : "",
+    "fr" : "",
+    "ja" : "",
+    "en" : ""
+  },
+  "permissions" : null,
+  "runInApp" : false,
+  "version" : "1.0.1",
+  "entry" : "index.tsx",
+  "iconImage" : "https:\/\/registry.npmmirror.com\/@lobehub\/icons-static-png\/latest\/files\/dark\/deepseek.png",
+  "author" : {
+    "email" : null,
+    "homepage" : null,
+    "name" : "叙白"
+  },
+  "intentInputTypes" : [
+
+  ],
+  "icon" : "chart.bar.fill",
+  "name" : "DeepSeek 用量"
+}
