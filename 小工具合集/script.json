@@ -1,0 +1,38 @@
+{
+  "localizedNames" : {
+    "en" : "Utility Hub",
+    "zh" : "小工具合集"
+  },
+  "permissions" : null,
+  "author" : {
+    "name" : "叙白",
+    "email" : null,
+    "homepage" : null
+  },
+  "intentInputTypes" : [
+
+  ],
+  "description" : "一个支持自定义布局的小工具合集",
+  "remoteResource" : null,
+  "iconImage" : "",
+  "localizedDescriptions" : {
+    "en" : "",
+    "ja" : "",
+    "it" : "",
+    "pt" : "",
+    "fr" : "",
+    "zh" : "一个支持自定义布局的小工具合集",
+    "es" : "",
+    "de" : "",
+    "ru" : ""
+  },
+  "contributors" : [
+
+  ],
+  "color" : "rgba(10, 132, 255, 1)",
+  "icon" : "wrench.and.screwdriver",
+  "entry" : "index.tsx",
+  "version" : "1.0.0",
+  "name" : "小工具合集",
+  "runInApp" : false
+}

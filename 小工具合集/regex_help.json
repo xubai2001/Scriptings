@@ -1,0 +1,194 @@
+{
+  "version": 1,
+  "examples": [
+    {
+      "title": "提取数字",
+      "description": "\\d+ 匹配连续的一组数字，适合订单号、金额、数量等场景。",
+      "pattern": "\\d+",
+      "text": "订单号 1001，金额 25 元。",
+      "highlights": [
+        { "start": 4, "end": 8, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 12, "end": 14, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "简单邮箱",
+      "description": "用字符集和 @、. 组合匹配常见邮箱格式。",
+      "pattern": "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}",
+      "text": "联系 support@example.com 获取帮助。",
+      "highlights": [
+        { "start": 3, "end": 22, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "行首与行尾",
+      "description": "^ 匹配行首，$ 匹配行尾；配合 m 模式可逐行匹配。",
+      "pattern": "^TODO:",
+      "text": "TODO: 补充说明\n已完成",
+      "highlights": [
+        { "start": 0, "end": 5, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "捕获括号内容",
+      "description": "圆括号会创建捕获组，可在捕获组区域查看每组内容。",
+      "pattern": "订单号 (\\d+)",
+      "text": "订单号 1001",
+      "highlights": [
+        { "start": 0, "end": 8, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "中国大陆手机号",
+      "description": "匹配以 1 开头、第二位为 3–9 的常见 11 位中国大陆手机号。",
+      "pattern": "1[3-9]\\d{9}",
+      "text": "请联系 13800138000 或 18612345678。",
+      "highlights": [
+        { "start": 4, "end": 15, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 18, "end": 29, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "匹配网址",
+      "description": "匹配以 http:// 或 https:// 开头的简单 URL。",
+      "pattern": "https?://[^\\s]+",
+      "text": "访问 https://example.com/docs 查看文档。",
+      "highlights": [
+        { "start": 3, "end": 27, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "匹配日期",
+      "description": "\\d{4}-\\d{2}-\\d{2} 可匹配常见的 YYYY-MM-DD 日期格式。",
+      "pattern": "\\d{4}-\\d{2}-\\d{2}",
+      "text": "发布日期：2026-08-24，更新日期：2026-09-01。",
+      "highlights": [
+        { "start": 5, "end": 15, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 21, "end": 31, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "匹配时间",
+      "description": "匹配 HH:MM 格式的简单时间。",
+      "pattern": "\\d{2}:\\d{2}",
+      "text": "会议时间 09:30，预计结束 18:45。",
+      "highlights": [
+        { "start": 5, "end": 10, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 17, "end": 22, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "提取中文",
+      "description": "[\\u4e00-\\u9fff]+ 匹配连续的中文字符。",
+      "pattern": "[\\u4e00-\\u9fff]+",
+      "text": "Hello 世界，Regex 正则表达式！",
+      "highlights": [
+        { "start": 6, "end": 8, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 10, "end": 12, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 13, "end": 18, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "匹配英文单词",
+      "description": "\\b 用于匹配单词边界，避免匹配到单词内部。",
+      "pattern": "\\b[A-Za-z]+\\b",
+      "text": "Hello world, regex is useful.",
+      "highlights": [
+        { "start": 0, "end": 5, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 6, "end": 11, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 13, "end": 18, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 19, "end": 21, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 22, "end": 28, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "多个空白字符",
+      "description": "\\s+ 匹配一个或多个空格、制表符或换行符。",
+      "pattern": "\\s+",
+      "text": "姓名：张三    年龄：25",
+      "highlights": [
+        { "start": 5, "end": 9, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "压缩重复空格",
+      "description": "使用 {2,} 专门匹配连续两个及以上的空格，适合清理文本。",
+      "pattern": " {2,}",
+      "text": "这是一段   有很多      空格的文本。",
+      "highlights": [
+        { "start": 4, "end": 7, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 10, "end": 16, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "IPv4 地址",
+      "description": "通过重复的数字段匹配常见 IPv4 地址。",
+      "pattern": "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b",
+      "text": "服务器地址是 192.168.1.100，备用地址为 10.0.0.1。",
+      "highlights": [
+        { "start": 6, "end": 19, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 26, "end": 34, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "Hex 颜色值",
+      "description": "匹配 #RGB 或 #RRGGBB 格式的常见网页颜色。",
+      "pattern": "#(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})\\b",
+      "text": "主题色 #FF6B6B，背景色 #FFF，文字 #1D1D1F。",
+      "highlights": [
+        { "start": 4, "end": 11, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 16, "end": 20, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 25, "end": 32, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "文件扩展名",
+      "description": "匹配文件名末尾的扩展名，可用于识别常见文件类型。",
+      "pattern": "\\.[A-Za-z0-9]+$",
+      "text": "config.json",
+      "highlights": [
+        { "start": 6, "end": 11, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "排除数字",
+      "description": "\\D+ 匹配一个或多个非数字字符，是 \\d 的反义。",
+      "pattern": "\\D+",
+      "text": "abc123def456",
+      "highlights": [
+        { "start": 0, "end": 3, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 6, "end": 9, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "可选内容",
+      "description": "? 表示前面的内容出现 0 次或 1 次。",
+      "pattern": "https?",
+      "text": "支持 http 和 https 协议。",
+      "highlights": [
+        { "start": 3, "end": 7, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 10, "end": 15, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "重复单词",
+      "description": "使用捕获组和反向引用 \\1 查找连续重复的相同单词。",
+      "pattern": "\\b(\\w+)\\s+\\1\\b",
+      "text": "This is is a test test.",
+      "highlights": [
+        { "start": 5, "end": 10, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 13, "end": 22, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    },
+    {
+      "title": "非贪婪匹配",
+      "description": ".*? 会尽可能少地匹配字符，适合提取多个成对标记之间的内容。",
+      "pattern": "\\[.*?\\]",
+      "text": "状态：[成功]，结果：[已保存]",
+      "highlights": [
+        { "start": 3, "end": 7, "color": "systemIndigo", "backgroundColor": "systemYellow" },
+        { "start": 11, "end": 16, "color": "systemIndigo", "backgroundColor": "systemYellow" }
+      ]
+    }
+  ]
+}
