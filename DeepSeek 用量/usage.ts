@@ -90,6 +90,27 @@ export function cacheHitRate(m: UsageMetrics): number {
 
 // ── 时间窗口 ─────────────────────────────────────────────────────────────────
 
+export type UsagePeriodDays = 7 | 30
+
+const USAGE_PERIOD_PATH = FileManager.appGroupDocumentsDirectory + "/deepseek_usage_period.json"
+
+export function readUsagePeriodDays(): UsagePeriodDays {
+  try {
+    if (!FileManager.existsSync(USAGE_PERIOD_PATH)) return 7
+    return FileManager.readAsStringSync(USAGE_PERIOD_PATH).trim() === "30" ? 30 : 7
+  } catch {
+    return 7
+  }
+}
+
+export function saveUsagePeriodDays(days: number): void {
+  try {
+    FileManager.writeAsStringSync(USAGE_PERIOD_PATH, days === 30 ? "30" : "7")
+  } catch (e) {
+    console.log("保存时间范围失败", e)
+  }
+}
+
 export function dayStart(ts: number): number {
   return Math.floor((ts + TZ_OFFSET) / 86400) * 86400 - TZ_OFFSET
 }

@@ -29,9 +29,9 @@ import {
   formatBalanceNum,
   widgetTimeLabel,
 } from "./widget_data"
-import { loadSavedKeys, formatMoney, formatCompact, dayLabel } from "./usage"
+import { loadSavedKeys, formatMoney, formatCompact, dayLabel, UsagePeriodDays, readUsagePeriodDays } from "./usage"
 
-// DeepSeek 用量小组件：small（余额）/ medium（余额 + 近7天余额走势图）/ large（完整看板）。
+// DeepSeek 用量小组件：small（余额）/ medium（余额 + 近7/30天余额走势图）/ large（完整看板）。
 // 顶部 logo 点击跳转平台用量页；余额点击刷新余额（AppIntent）。
 
 const RELOAD_MS = 15 * 60 * 1000 // 每 15 分钟请求一次新时间线
@@ -137,50 +137,64 @@ function TrendChart({
       </HStack>
     )
   }
+  // 横轴标签：7 天时数据点少，系统轴钉首/中/今即可完整显示；
+  // 30 天时系统轴标签贴边会被裁剪，改为隐藏 x 轴，在图表下方用 HStack 手动放首/中/末日三个日期——
+  // 内容一定是真实首末日，且 Text 在容器内不会被裁剪（位置大致对准即可，不要求精确）。
+  const n = marks.length
+  const longAxis = n > 14
+  const axisIndexes = [0, Math.floor((n - 1) / 2), n - 1]
   return (
-    <Chart frame={{ height }}
-      chartXAxis={{
-        position: "bottom",
-        tick: false,
-        gridLine: false,
-        values: {
-          type: "values",
-          values: [
-            marks[0].label,
-            marks[Math.floor((marks.length - 1) / 2)].label,
-            marks[marks.length - 1].label,
-          ],
-        },
-        valueLabel: {
-          multiLabelAlignment: "center",
-          // 想显示真正的日期文字就去掉 content；想保留自定义样式可留 content
-        },
-      }}
-      // chartYScale={{ domain: { from: 10, to: 30 }, type: "linear" }}
-    >
-      <AreaChart
-        marks={marks.map(m => ({
-          ...m,
-          interpolationMethod: "catmullRom",
-          // 官方 Multiple Charts 示例写法：两段颜色数组 = 实色→透明渐变（首色在折线处，末色在横轴处）
-          foregroundStyle: gradient,
-        }))}
+    <VStack spacing={0}>
+      <Chart frame={{ height }}
+        chartXAxis={longAxis
+          ? "hidden"
+          : {
+              position: "bottom",
+              tick: false,
+              gridLine: false,
+              values: {
+                type: "values",
+                values: axisIndexes.map(i => marks[i].label),
+              },
+              valueLabel: {
+                multiLabelAlignment: "center",
+              },
+            }}
+        // chartYScale={{ domain: { from: 10, to: 30 }, type: "linear" }}
+      >
+        <AreaChart
+          marks={marks.map(m => ({
+            ...m,
+            interpolationMethod: "catmullRom",
+            // 官方 Multiple Charts 示例写法：两段颜色数组 = 实色→透明渐变（首色在折线处，末色在横轴处）
+            foregroundStyle: gradient,
+          }))}
 
-      />
-      <LineChart
-        marks={marks.map(m => ({
-          ...m,
-          interpolationMethod: "catmullRom",
-          foregroundStyle: lineColor,
-          lineStyle: { lineWidth: 2, lineCap: "round", lineJoin: "round" },
+        />
+        <LineChart
+          marks={marks.map(m => ({
+            ...m,
+            interpolationMethod: "catmullRom",
+            foregroundStyle: lineColor,
+            lineStyle: { lineWidth: 2, lineCap: "round", lineJoin: "round" },
 
-        }))}
+          }))}
 
-      />
-      <ChartPlotStyle>
-          {(plot) => plot.clipShape("rect")}
-        </ChartPlotStyle>
-    </Chart>
+        />
+        <ChartPlotStyle>
+            {(plot) => plot.clipShape("rect")}
+          </ChartPlotStyle>
+      </Chart>
+      {longAxis && (
+        <HStack spacing={0} padding={{ top: 2, trailing: 12 }}>
+          <Text font={10} foregroundStyle="secondaryLabel">{marks[0].label}</Text>
+          <Spacer />
+          <Text font={10} foregroundStyle="secondaryLabel">{marks[Math.floor(n / 2)].label}</Text>
+          <Spacer />
+          <Text font={10} foregroundStyle="secondaryLabel">{marks[n - 1].label}</Text>
+        </HStack>
+      )}
+    </VStack>
   )
 }
 
@@ -305,7 +319,7 @@ function MediumView({ data, error, mode }: { data: WidgetSnapshot; error: string
           累计消费 {formatMoney(data.totalCost)}
         </Text>
         <Text font={10} foregroundStyle="secondaryLabel" lineLimit={1} minScaleFactor={0.7}>
-          7天消耗 {formatMoney(data.weekCost)}
+          {data.periodDays === 30 ? "30天" : "7天"}消耗 {formatMoney(data.weekCost)}
         </Text>
         <UpdatedAt data={data} />
       </VStack>
@@ -319,7 +333,7 @@ function MediumView({ data, error, mode }: { data: WidgetSnapshot; error: string
             foregroundStyle="secondaryLabel"
             frame={{ maxWidth: "infinity", alignment: "center" }}
           >
-            {mode === "balance" ? "近7天余额" : "近7天用量 (M)"}
+            {mode === "balance" ? (data.periodDays === 30 ? "近30天余额" : "近7天余额") : (data.periodDays === 30 ? "近30天用量 (M)" : "近7天用量 (M)")}
           </Text>
           <ChartModeSwitch mode={mode} />
         </HStack>
@@ -341,6 +355,8 @@ function MediumView({ data, error, mode }: { data: WidgetSnapshot; error: string
 // ── large：完整看板（余额 + 图表（余额/Token 可切换） + 每日明细） ───────────────
 
 function LargeView({ data, error, mode }: { data: WidgetSnapshot; error: string | null; mode: ChartMode }) {
+  // 具体用量信息列固定展示近 7 天（large 空间有限），图表按所选周期展示
+  const week7Cost = data.daily.slice(-7).reduce((sum, d) => sum + d.cost, 0)
   return (
     <VStack padding={14} spacing={7}>
       <HStack>
@@ -358,7 +374,7 @@ function LargeView({ data, error, mode }: { data: WidgetSnapshot; error: string 
             累计消费 {formatMoney(data.totalCost)}
           </Text>
           <Text font={11} foregroundStyle="secondaryLabel">
-            近7天消费 {formatMoney(data.weekCost)}
+            近7天消费 {formatMoney(week7Cost)}
           </Text>
         </VStack>
         <VStack spacing={3} alignment="leading">
@@ -369,7 +385,7 @@ function LargeView({ data, error, mode }: { data: WidgetSnapshot; error: string 
               foregroundStyle="secondaryLabel"
               frame={{ maxWidth: "infinity", alignment: "center" }}
             >
-              {mode === "balance" ? "近7天余额" : "近7天用量 (M)"}
+              {mode === "balance" ? (data.periodDays === 30 ? "近30天余额" : "近7天余额") : (data.periodDays === 30 ? "近30天用量 (M)" : "近7天用量 (M)")}
             </Text>
             <ChartModeSwitch mode={mode} />
           </HStack>
@@ -408,7 +424,7 @@ function LargeView({ data, error, mode }: { data: WidgetSnapshot; error: string 
           消费
         </Text>
       </HStack>
-      {[...data.daily].reverse().map(d => (
+      {[...data.daily].slice(-7).reverse().map(d => (
         <HStack key={d.time} spacing={4}>
           <Text font={10} frame={{ width: 36, alignment: "leading" }}>
             {dayLabel(d.time)}
@@ -441,14 +457,16 @@ export function WidgetView({ data, error, family, mode }: { data: WidgetSnapshot
   return <SmallView data={data} error={error} />
 }
 
-function emptySnapshot(): WidgetSnapshot {
-  return { updatedAt: 0, balance: 0, bonusBalance: 0, totalCost: 0, weekCost: 0, currency: "CNY", daily: [] }
+function emptySnapshot(periodDays: UsagePeriodDays): WidgetSnapshot {
+  return { updatedAt: 0, balance: 0, bonusBalance: 0, totalCost: 0, weekCost: 0, periodDays, currency: "CNY", daily: [] }
 }
 
 async function run() {
   const keys = loadSavedKeys()
+  const periodDays = readUsagePeriodDays()
   const cached = readWidgetCache()
-  let data = cached ?? emptySnapshot()
+  const matchingCached = cached?.periodDays === periodDays ? cached : null
+  let data = matchingCached ?? emptySnapshot(periodDays)
   let error: string | null = null
 
   if (keys.length > 0) {
@@ -458,11 +476,11 @@ async function run() {
       data = fresh
     } catch (e) {
       error = (e as Error)?.message ?? "获取失败"
-      if (!cached) data = emptySnapshot()
+      if (!matchingCached) data = emptySnapshot(periodDays)
     }
   } else {
     error = "未配置 Key"
-    if (!cached) data = emptySnapshot()
+    if (!matchingCached) data = emptySnapshot(periodDays)
   }
 
   const mode = readChartMode()

@@ -47,8 +47,11 @@ import {
   mergeAll,
   usageWindow,
   dailySeries,
+  UsagePeriodDays,
   loadSavedKeys,
   saveSavedKeys,
+  readUsagePeriodDays,
+  saveUsagePeriodDays,
   formatNumber,
   formatCompact,
   formatMoney,
@@ -473,7 +476,7 @@ function SettingsView({
 function MainView() {
   const dismiss = Navigation.useDismiss()
   const [savedKeys, setSavedKeys] = useState<SavedKey[] | null>(null)
-  const [periodDays, setPeriodDays] = useState<number>(7)
+  const [periodDays, setPeriodDays] = useState<UsagePeriodDays>(readUsagePeriodDays())
   const [selectedKeyId, setSelectedKeyId] = useState<string>(ALL_KEY_ID)
   const [keyList, setKeyList] = useState<KeyUsage[]>([])
   const [summary, setSummary] = useState<UserSummary | null>(null)
@@ -560,6 +563,13 @@ function MainView() {
     if (selectedKeyId !== ALL_KEY_ID && !next.some(k => k.id === selectedKeyId)) {
       setSelectedKeyId(ALL_KEY_ID)
     }
+  }
+
+  function handlePeriodDaysChanged(days: number) {
+    const next = days === 30 ? 30 : 7
+    setPeriodDays(next)
+    saveUsagePeriodDays(next)
+    Widget.reloadAll()
   }
 
   // 在 App 内预览小组件：调用系统预览（会真实运行 widget.tsx 并拉取最新数据）
@@ -694,7 +704,7 @@ function MainView() {
             <Section header={<Text>筛选</Text>}>
               <Picker
                 value={periodDays}
-                onChanged={setPeriodDays}
+                onChanged={handlePeriodDaysChanged}
                 pickerStyle="menu"
                 title="时间范围"
               >

@@ -10,9 +10,11 @@ import {
   usageWindow,
   dailySeries,
   totalTokens,
+  UsagePeriodDays,
+  readUsagePeriodDays,
 } from "./usage"
 
-// DeepSeek 小组件数据层：余额/近7日消费抓取与本地缓存。
+// DeepSeek 小组件数据层：余额/按 7 或 30 天消费抓取与本地缓存。
 // logo 直接用 api-balance 同款 DeepSeek.svg（图标+文字合一，完整 XML），以 code 内嵌方式渲染：
 // 构建副本不含 icons/ 资源，widget 环境读不到脚本目录文件，内嵌常量随 widget.js 一起编译，必然存在。
 
@@ -40,9 +42,10 @@ export type WidgetSnapshot = {
   balance: number // 正常余额
   bonusBalance: number // 赠送余额
   totalCost: number // 累计消费（全时段）
-  weekCost: number // 近 7 天消费
+  weekCost: number // 当前时间范围内消费
+  periodDays: UsagePeriodDays
   currency: string
-  daily: DailyPoint[] // 近 7 天逐日数据
+  daily: DailyPoint[] // 当前时间范围逐日数据
 }
 
 // ── 本地缓存 ─────────────────────────────────────────────────────────────────
@@ -67,6 +70,7 @@ export function readWidgetCache(): WidgetSnapshot | null {
       bonusBalance: Number(obj.bonusBalance) || 0,
       totalCost: Number(obj.totalCost) || 0,
       weekCost: Number(obj.weekCost) || 0,
+      periodDays: obj.periodDays === 30 ? 30 : 7,
       currency: typeof obj.currency === "string" ? obj.currency : "CNY",
       daily,
     }
@@ -119,7 +123,8 @@ export function saveChartMode(mode: ChartMode): void {
  * 任何一类请求全部失败时抛错；部分失败时使用成功的数据。
  */
 export async function fetchWidgetSnapshot(keys: SavedKey[]): Promise<WidgetSnapshot> {
-  const { start, end } = usageWindow(7)
+  const periodDays = readUsagePeriodDays()
+  const { start, end } = usageWindow(periodDays)
   const [sumResults, costResults, usageResults] = await Promise.all([
     settle(keys.map(k => fetchSummary(k.token))),
     settle(keys.map(k => fetchCost(k.token, start, end))),
@@ -159,6 +164,7 @@ export async function fetchWidgetSnapshot(keys: SavedKey[]): Promise<WidgetSnaps
     bonusBalance,
     totalCost,
     weekCost: merged.totalCost,
+    periodDays,
     currency,
     daily,
   }
