@@ -1,0 +1,17 @@
+{
+  "name": "Lume RSS",
+  "icon": "newspaper.fill",
+  "color": "rgba(28, 28, 30, 1)",
+  "version": "1.0.0",
+  "runInApp": true,
+  "description": "A reading-first RSS client with optional AI summaries.",
+  "localizedNames": {
+    "zh": "Lume RSS"
+  },
+  "localizedDescriptions": {
+    "zh": "以阅读体验为核心的现代 RSS 客户端，支持 AI 总结。"
+  },
+  "author": {
+    "name": "Lume"
+  }
+}
